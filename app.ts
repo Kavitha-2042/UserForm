@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use('/user', userRoute)
 
 mongoose.connect('mongodb://localhost:27017/loginregister', ()=>{
+    console.log("DB Connected...")
     app.listen(5000, ()=>{
         console.log("Server runs on port 5000....")
     })
