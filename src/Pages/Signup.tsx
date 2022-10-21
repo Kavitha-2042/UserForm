@@ -3,6 +3,7 @@ import axios from 'axios'
 import { initialize } from '../Redux/Slices/userSlice'
 import { useAppDispatch } from '../Redux/Hooks'
 import { useNavigate } from 'react-router-dom'
+import Home from './Home'
 
 const Signup = () => {
 
@@ -30,13 +31,18 @@ const Signup = () => {
             name,email,password, conpass
         })
         .then((signupResponse)=>{
+            console.log("singup")
             if(signupResponse.data.auth){
                 localStorage.setItem("jwt-token", signupResponse.data.token)
                 dispatch(initialize({auth:signupResponse.data.auth, user:signupResponse.data.user}))
+                alert(signupResponse.data.message)
+                navigate('/signin')
                 
             }
-            alert(signupResponse.data.message)
-            navigate('/signin')
+           
+            console.log("token: ", signupResponse.data.token)
+            
+           //localStorage.removeItem(signupResponse.data.token) 
         })
         .catch(err=>console.log(err))
 
@@ -46,7 +52,10 @@ const Signup = () => {
     }
 
   return (
+    <div>
+        <Home/>
     <div style={{textAlign:"center"}}>
+        
         <form action="">
             <h1>Sign Up</h1>
             <input type="text" name ="username" placeholder='username' onChange={(e:any)=>{setName(e.target.value)}} />
@@ -59,6 +68,7 @@ const Signup = () => {
             <br />
             <button onClick={handleEvent}>Sign up</button>
         </form>
+    </div>
     </div>
   )
 }

@@ -1,25 +1,16 @@
 import React from 'react'
-
-
-
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
+    AppBar,
+    Box,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
 
 
 } from '@mui/material'
 
-
-const Profile = () => {
-
-  
-  
-
-
+const Home = () => {
   return (
     <div>
 <Box sx={{ flexGrow: 1 }}>
@@ -40,8 +31,8 @@ const Profile = () => {
             </a>
             
           </Typography>
-          
-          <Button  ><a href="/signout">Signout</a></Button>
+          <Button  style={{color:"white"}}><a href="/signup">Signup</a></Button>
+          <Button  ><a href="/signin">Signin</a></Button>
         </Toolbar>
       </AppBar>
     </Box>
@@ -49,4 +40,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default Home
