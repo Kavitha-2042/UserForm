@@ -12,7 +12,7 @@ const middleware = (req:ModifiedRequest, res:express.Response, next:express.Next
             let verifying = jwt.verify(token, "Atokenforsignin")
             let decoding:any = jwt.decode(token) 
             
-            if(req.path !== '/signup' && req.path !== '/signin'){
+            if(req.path !== '/signup' && req.path !== '/signin' && req.path !== '/forgotpassword' && req.path.startsWith('/forgotpassword')){
                 userModel.findById({_id: decoding._id})
                 .then((response)=>{
                     if(response?.password){
@@ -32,11 +32,11 @@ const middleware = (req:ModifiedRequest, res:express.Response, next:express.Next
         }
     }
     else{
-            if( req.path === '/signup' || req.path === '/signin' || req.path === '/forgotpassword' ){
+            if( req.path === '/signup' || req.path === '/signin' || req.path === '/forgotpassword' || req.path.startsWith('/forgotpassword') ){
                 next()
             }
             else{
-                return res.json({ message:"Invalid path" })
+                return res.json({ message:"Path is invalid" })
             }
     }
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const forgotSchema = new mongoose.Schema({
+export const forgotSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true

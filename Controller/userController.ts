@@ -8,6 +8,7 @@ import forgotModel from '../Model/forgotModel';
 
 import { ModifiedRequest } from '../interface';
 
+
 export const Signp = (req:ModifiedRequest, res:express.Response, next:express.NextFunction) =>{
     const {name, email, password, conpass} = req.body;
     
@@ -82,7 +83,7 @@ export const Signin = (req:ModifiedRequest, res:express.Response, next:express.N
                 let token = jwt.sign( {_id: String(findResult._id)}, "Atokenforsignin")
 
                 return res.json({
-                    message:"Signin Success",
+                    message:"Signin Successful",
                     user: findResult,
                     token
                 })
@@ -116,7 +117,6 @@ export const Status = (req:ModifiedRequest, res: express.Response) =>{
 function urlPattern(length:number){
     let characters = "ABCDEFGHKIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     let result = ""
-    //let characterLength = characters.length
     for(let i = 0; i < length; i++){
         result+=characters.charAt(Math.floor(Math.random()*characters.length -1))
     }
@@ -156,7 +156,60 @@ export const ForgotPassword = (req:ModifiedRequest, res:express.Response, next:e
     }
 }
 
+export const UpdatePassword = (req:ModifiedRequest, res:express.Response, next: express.NextFunction) =>{
+    const url = req.params.forgotpassURL
 
-export const ResetPassword = (req:ModifiedRequest, res:express.Response, next:express.NextFunction) =>{
+    forgotModel.findOne({ url:url })
+    .then(( urlResult:any)=>{
+        console.log("urlResult: ", urlResult)
+        if(!urlResult){
+            return res.json({message:"Your url is not valid!!!", status:false})
+        }
+        const time = Date.now()
+        if(time > urlResult.expiration){
+            forgotModel.deleteOne({ url })
+            .then((urlDelete)=>{
+                return res.json({message:"Url link expired"})
+            })
+            .catch(err=>{
+                return res.json({message:"Some error occured"})
+            })
+        }
+        else{
+            //return res.json({valid:true})
 
+            const { newPassword, conNewPassword} = req.body;
+
+            const newPassValidation = joi.object({
+                newPassword: joi.string().min(6).max(20).uppercase().lowercase().required(),
+                conNewPassword: newPassword
+            })
+
+            newPassValidation.validateAsync({ newPassword, conNewPassword})
+            .then((newPassValidResult)=>{
+                if( newPassword === conNewPassword){
+                    bycryptjs.hash(newPassword, 15)
+                    .then((hashNewPassword)=>{
+                        userModel.updateOne({email:urlResult.email}, { password:hashNewPassword})
+                        .then(( updatePassword )=>{
+                            
+                            return res.json({
+                                message:"New Password updated!!!",
+                                pass:updatePassword,
+                                status:true
+                            })
+                        })
+                        .catch(err=>console.log(err))
+                    })
+                    .catch(err=>console.log(err))
+                }
+                else{
+                    return res.json({message:"New password doesn't match with confirm password"})
+                }
+            })
+            .catch(err=>console.log(err))
+
+        }
+    })
+    .catch(err=>console.log(err))
 }
