@@ -1,22 +1,19 @@
 import React from 'react'
-
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
+    AppBar,
+    Box,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
 
 
 } from '@mui/material'
 
-
-const Profile = () => {
-
+const HomeLogin = () => {
   return (
     <div>
-<Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -30,11 +27,11 @@ const Profile = () => {
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <a href='/'> 
-            Home
+            User
             </a>
             
           </Typography>
-          <Button  ><a href="/changepassword">ChangePassword</a></Button>
+          <Button  style={{color:"white"}}><a href="/profile">Profile</a></Button>
           <Button  ><a href="/signout">Signout</a></Button>
         </Toolbar>
       </AppBar>
@@ -43,4 +40,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default HomeLogin

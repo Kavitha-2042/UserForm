@@ -26,13 +26,13 @@ const Signin = () => {
             if(signinResult.data.auth){
                 localStorage.setItem("jwt-token", signinResult.data.token)
                 dispatch(initialize({user: signinResult.data.user, auth: signinResult.data.auth}))
-                
-              
+  
+                navigate("/homelogin")
             }
             console.log("Signin")
-            navigate("/profile")
-            
             alert(signinResult.data.message)
+            
+            
                 console.log("signin token: ", signinResult.data.token)
             //window.location.reload()
             
@@ -56,6 +56,9 @@ const Signin = () => {
         <button onClick={eventHandler} >Sign in</button>
         <br />
         <Link to="/forgotpassword">Forgot Password</Link>
+        
+        
+
       </form>
     </div>
   )

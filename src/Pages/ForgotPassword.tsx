@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [checkEmail, setCheckEmail] = useState("");
 
-  const [showBtn, setShowBtn] = useState(false);
-  const [url, setUrl] = useState("");
+  // const [showBtn, setShowBtn] = useState(false);
+  // const [url, setUrl] = useState("");
 
   const eventHandler = (e: any) => {
     e.preventDefault();
@@ -21,12 +21,12 @@ const ForgotPassword = () => {
         console.log("Forgot pass:", forgotPasswordResult);
         
 
-        setUrl(forgotPasswordResult.data.Link);
+        // setUrl(forgotPasswordResult.data.Link);
 
-        if (forgotPasswordResult.data.Link) {
-          setShowBtn(true);
-        }
-        alert(forgotPasswordResult.data.message)
+        // if (forgotPasswordResult.data.Link) {
+        //   setShowBtn(true);
+        // }
+         alert(forgotPasswordResult.data.message)
         
       })
       .catch((err) => console.log(err));
@@ -48,13 +48,13 @@ const ForgotPassword = () => {
         <button onClick={eventHandler}> Submit </button>
         <br />
 
-        {showBtn ? (
+        {/* {showBtn ? (
           <Link to={url}>
             <button>Click</button>
           </Link>
         ) : (
           ""
-        )}
+        )} */}
       </form>
     </div>
   );

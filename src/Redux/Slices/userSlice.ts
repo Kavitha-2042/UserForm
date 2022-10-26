@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
+import { useEffect } from "react";
 
 export interface User{
     _id?:string,
@@ -24,7 +26,11 @@ const userSlice = createSlice({
         initialize:(state:InitialState, action:PayloadAction<InitialState>) =>{
             state.user = action.payload.user
             state.auth = action.payload.auth
+        },
+        preventingPrevious:(state:InitialState, action:PayloadAction<InitialState>) =>{
+            
         }
+        
     }
 })
 
