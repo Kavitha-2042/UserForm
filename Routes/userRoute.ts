@@ -17,4 +17,6 @@ userRoute.post("/forgotpassword", middleware, userController.ForgotPassword)
 
 userRoute.post("/forgotpassword/:forgotpassURL", middleware, userController.UpdatePassword)
 
+userRoute.post("/changepassword", middleware, userController.ChangePassword)
+
 export default userRoute

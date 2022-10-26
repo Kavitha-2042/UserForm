@@ -1,12 +1,38 @@
+import dotenv from "dotenv"
+dotenv.config()
+
 import express from 'express'
-import joi, { valid } from "joi"
+import joi, { any } from "joi"
 import bycryptjs from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 import userModel from '../Model/userModel';
 import forgotModel from '../Model/forgotModel';
 
-import { ModifiedRequest } from '../interface';
+import { ModifiedRequest, MailTypes } from '../interface';
+
+import nodemailer from 'nodemailer'
+
+
+
+
+// const sendMail = async (MailObject: MailTypes) =>{
+
+//     const { from, to, subject } = MailObject
+
+//     const transporter = nodemailer.createTransport({
+//         service:"gmail",
+//         auth: {
+//             user: 'kavithasubburam204@gmail.com',
+//             pass: 'kavithA#123'
+//         }
+//     });
+    
+//     transporter.sendMail(MailObject)
+//     .then(mailResponse=>(console.log(mailResponse)))
+//     .catch(err=>console.log(err))
+// }
+
 
 
 export const Signp = (req:ModifiedRequest, res:express.Response, next:express.NextFunction) =>{
@@ -85,7 +111,8 @@ export const Signin = (req:ModifiedRequest, res:express.Response, next:express.N
                 return res.json({
                     message:"Signin Successful",
                     user: findResult,
-                    token
+                    token,
+                    auth:true
                 })
 
             })
@@ -123,6 +150,15 @@ function urlPattern(length:number){
     return result
 }
 
+const transporter = nodemailer.createTransport({
+    service:"sendinblue",
+    auth:{
+        user:process.env.AUTH_EMAIL,
+        pass:process.env.AUTH_PASSWORD
+    }
+})
+
+
 export const ForgotPassword = (req:ModifiedRequest, res:express.Response, next:express.NextFunction) =>{
     const { email } = req.body
 
@@ -139,10 +175,27 @@ export const ForgotPassword = (req:ModifiedRequest, res:express.Response, next:e
 
             forgotModel.create({email, url, creationTime, expiration})
             .then((urlLink)=>{
-                return res.json({
-                    message:"Url created",
-                    Link: `/forgotpassword/${urlLink.url}`
+                // return res.json({
+                //     message:"Url created",
+                //     Link: `/forgotpassword/${urlLink.url}`
+                // })
+
+                const mailObject = transporter.sendMail({
+                    from: process.env.AUTH_EMAIL,
+                    to: email,
+                    subject:"Password Reset Link",
+                    text: `http://localhost:5000/user/forgotpassword/${urlLink.url}`
                 })
+                .then((response)=>{
+                    return res.json({
+                        message:"Link sent",
+                        redirection: null
+                    })
+                })
+                .catch((err)=>{
+                    return res.json({message:err})
+                })
+                
             })
             .catch(err=>console.log(err))
             
@@ -209,6 +262,47 @@ export const UpdatePassword = (req:ModifiedRequest, res:express.Response, next: 
             })
             .catch(err=>console.log(err))
 
+        }
+    })
+    .catch(err=>console.log(err))
+}
+
+export const ChangePassword = (req:ModifiedRequest, res:express.Response, next: express.NextFunction) =>{
+    const { newPassword, conNewPassword} = req.body
+
+    console.log("test email: ", req.users.email)
+
+    const passValidation = joi.object({
+        newPassword: joi.string().min(6).max(20).uppercase().lowercase().required(),
+        conNewPassword: newPassword
+    })
+
+    passValidation.validateAsync({ newPassword, conNewPassword})
+    .then((validateResult)=>{
+        if(newPassword === conNewPassword){
+            if(newPassword !== req.users.password){
+                bycryptjs.hash(newPassword, 15)
+                .then((hashNewPassword)=>{
+                    console.log("users id1: ", req.users._id)
+                    console.log("user email1: ", req.users.email)
+                    console.log("users password1: ", req.users.password)
+
+                    userModel.findByIdAndUpdate(req.users._id, {password:hashNewPassword})
+                    .then((updateResult)=>{
+                        console.log("Update Result: ", updateResult)
+                      return res.json({
+                            message:"New password updated!!!",
+                            password:updateResult,
+                            status:true
+                        })
+                    })
+                    .catch(err=>console.log(err))
+                })
+                .catch(err=>console.log(err))
+            }
+        }
+        else{
+            return res.json({message:"Password and confirm password doesn't match!!!", status:false})
         }
     })
     .catch(err=>console.log(err))

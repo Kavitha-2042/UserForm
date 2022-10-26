@@ -5,14 +5,14 @@ import userModel from "../Model/userModel"
 
 const middleware = (req:ModifiedRequest, res:express.Response, next:express.NextFunction) =>{
     let token = req.headers["jwt-token"] as string
-
+    console.log(req.headers)
     if(token){
         
         try{
             let verifying = jwt.verify(token, "Atokenforsignin")
             let decoding:any = jwt.decode(token) 
             
-            if(req.path !== '/signup' && req.path !== '/signin' && req.path !== '/forgotpassword' && req.path.startsWith('/forgotpassword')){
+            if(req.path !== '/signup' && req.path !== '/signin' && req.path !== '/forgotpassword' && !req.path.startsWith('/forgotpassword') ){
                 userModel.findById({_id: decoding._id})
                 .then((response)=>{
                     if(response?.password){
